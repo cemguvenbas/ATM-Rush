@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 public class CoreGameSignals : MonoSingleton<CoreGameSignals>
 {
-    //public UnityAction<GameStates> onChangeGameStates = delegate { };
+    public UnityAction<GameStates> onChangeGameState = delegate { };
     public UnityAction<byte> onLevelInitialize = delegate { };
     public UnityAction onClearActiveLevel = delegate { };
     public Func<byte> onGetLevelValue = delegate { return 0; };
