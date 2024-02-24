@@ -36,65 +36,71 @@ public class PlayerManager : MonoBehaviour
 
     private void SubscribeEvents()
     {
-        InputSignals.Instance.onInputTaken += OnActivateMovement;
-        InputSignals.Instance.onInputReleased += OnDeactivateMovement;
+        InputSignals.Instance.onInputTaken += () => PlayerSignals.Instance.onPlayConditionChanged?.Invoke(true);
+        InputSignals.Instance.onInputReleased += () => PlayerSignals.Instance.onPlayConditionChanged?.Invoke(false);
         InputSignals.Instance.onInputDragged += OnInputDragged;
         CoreGameSignals.Instance.onPlay += OnPlay;
-        CoreGameSignals.Instance.onLevelSuccessful += OnLevelSuccessful;
-        CoreGameSignals.Instance.onLevelFailed += OnLevelFailed;
+        CoreGameSignals.Instance.onLevelSuccessful += () => PlayerSignals.Instance.onPlayConditionChanged?.Invoke(false);
+        CoreGameSignals.Instance.onLevelFailed += () => PlayerSignals.Instance.onPlayConditionChanged?.Invoke(false);
         CoreGameSignals.Instance.onReset += OnReset;
+
+        //ScoreSignals.Instance.onSetTotalScore += meshController.OnSetTotalScore();
+        CoreGameSignals.Instance.onMiniGameEntered += OnMiniGameEntered;
     }
 
-    private void OnActivateMovement()
+    private void OnMiniGameEntered()
     {
-        //movementController.IsReadyToMove(true);
-    }
-
-    private void OnDeactivateMovement()
-    {
-        //movementController.IsReadyToMove(false);
+        PlayerSignals.Instance.onPlayConditionChanged?.Invoke(false);
+        StartCoroutine(WaitForFinal());
     }
 
     private void OnInputDragged(HorizontalInputParams inputParams)
     {
-        //movementController.UpdateInputValue(inputParams);
+        movementController.UpdateInputValue(inputParams);
     }
 
     private void OnPlay()
     {
-        //movementController.IsReadyToPlay(true);
-    }
-
-    private void OnLevelSuccessful()
-    {
-        //movementController.IsReadyToPlay(false);
-    }
-
-    private void OnLevelFailed()
-    {
-        //movementController.IsReadyToPlay(false);
+        PlayerSignals.Instance.onPlayConditionChanged?.Invoke(true);
+        PlayerSignals.Instance.onChangePlayerAnimationState?.Invoke(PlayerAnimationStates.Run);
     }
 
     private void OnReset()
     {
-        //movementController.OnReset();
-        //animationController.OnReset();
+        movementController.OnReset();
+        animationController.OnReset();
     }
 
     private void UnSubscribeEvents()
     {
-        InputSignals.Instance.onInputTaken -= OnActivateMovement;
-        InputSignals.Instance.onInputReleased -= OnDeactivateMovement;
+        InputSignals.Instance.onInputTaken -= () => PlayerSignals.Instance.onPlayConditionChanged?.Invoke(true);
+        InputSignals.Instance.onInputReleased -= () => PlayerSignals.Instance.onPlayConditionChanged?.Invoke(false);
         InputSignals.Instance.onInputDragged -= OnInputDragged;
         CoreGameSignals.Instance.onPlay -= OnPlay;
-        CoreGameSignals.Instance.onLevelSuccessful -= OnLevelSuccessful;
-        CoreGameSignals.Instance.onLevelFailed -= OnLevelFailed;
+        CoreGameSignals.Instance.onLevelSuccessful -= () => PlayerSignals.Instance.onPlayConditionChanged?.Invoke(false);
+        CoreGameSignals.Instance.onLevelFailed -= () => PlayerSignals.Instance.onPlayConditionChanged?.Invoke(false);
         CoreGameSignals.Instance.onReset -= OnReset;
+
+        //ScoreSignals.Instance.onSetTotalScore -= meshController.OnSetTotalScore();
+        CoreGameSignals.Instance.onMiniGameEntered -= OnMiniGameEntered;
     }
 
     private void OnDisable()
     {
         UnSubscribeEvents();
+    }
+    internal void SetStackPosition()
+    {
+        var position = transform.position;
+        Vector2 pos = new Vector2(position.x, position.z);
+        //StackSignals.Instance.onStackFollowPlayer?.Invoke(pos);
+    }
+    private IEnumerator WaitForFinal()
+    {
+        PlayerSignals.Instance.onChangePlayerAnimationState?.Invoke(PlayerAnimationStates.Idle);
+        yield return new WaitForSeconds(2f);
+        gameObject.SetActive(false);
+        CoreGameSignals.Instance.onMiniGameStart?.Invoke();
     }
 
 }
