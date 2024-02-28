@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
 
     private void SubscribeEvents()
     {
-        CoreGameSignals.Instance.onChangeGameState += OnChangeGameState;
+        CoreGameSignals.Instance.onChangeGameStates += OnChangeGameState;
     }
 
     private void OnChangeGameState(GameStates state)
@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
 
     private void UnSubscribeEvents()
     {
-        CoreGameSignals.Instance.onChangeGameState -= OnChangeGameState;
+        CoreGameSignals.Instance.onChangeGameStates -= OnChangeGameState;
     }
 
     private void OnDisable()

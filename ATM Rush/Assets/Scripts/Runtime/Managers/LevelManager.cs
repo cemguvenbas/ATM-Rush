@@ -39,7 +39,7 @@ public class LevelManager : MonoBehaviour
     {
         CoreGameSignals.Instance.onLevelInitialize += _levelLoaderCommand.Execute;
         CoreGameSignals.Instance.onClearActiveLevel += _levelDestroyerCommand.Execute;
-        CoreGameSignals.Instance.onGetLevelValue += OnGetLevelValue;
+        CoreGameSignals.Instance.onGetLevelID += OnGetLevelValue;
         CoreGameSignals.Instance.onNextLevel += OnNextLevel;
         CoreGameSignals.Instance.onRestartLevel += OnRestartLevel;
     }
@@ -68,7 +68,7 @@ public class LevelManager : MonoBehaviour
     {
         CoreGameSignals.Instance.onLevelInitialize -= _levelLoaderCommand.Execute;
         CoreGameSignals.Instance.onClearActiveLevel -= _levelDestroyerCommand.Execute;
-        CoreGameSignals.Instance.onGetLevelValue -= OnGetLevelValue;
+        CoreGameSignals.Instance.onGetLevelID -= OnGetLevelValue;
         CoreGameSignals.Instance.onNextLevel -= OnNextLevel;
         CoreGameSignals.Instance.onRestartLevel -= OnRestartLevel;
     }
