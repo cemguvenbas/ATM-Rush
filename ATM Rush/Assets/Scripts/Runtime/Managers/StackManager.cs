@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class StackManager : MonoBehaviour
 {
     [Header("Private Variables")]
     private StackData _data;
     private List<GameObject> _collectableStack = new List<GameObject>();
-    private bool _lastCheck;
+
+    public bool LastCheck { get; set; }
 
     [Header("Commands")]
     private StackMoverCommand _stackMoverCommand;
@@ -24,7 +26,7 @@ public class StackManager : MonoBehaviour
     public StackJumperCommand StackJumperCommand { get; private set; }
 
     public StackTypeUpdaterCommand StackTypeUpdaterCommand { get; private set; }
-
+        
     public ItemAdderOnStackCommand AdderOnStackCommand { get; private set; }
 
     private void Awake()
@@ -57,7 +59,44 @@ public class StackManager : MonoBehaviour
 
     private void SubscribeEvents()
     {
+        StackSignals.Instance.onInteractionCollectable += OnInteractionWithCollectable;
+        StackSignals.Instance.onInteractionObstacle += _itemRemoverOnStackCommand.Execute;
+        StackSignals.Instance.onInteractionATM += OnInteractionWithATM;
+        StackSignals.Instance.onInteractionConveyor += _stackInteractionWithConveyorCommand.Execute;
+        StackSignals.Instance.onStackFollowPlayer += OnStackMove;
+        StackSignals.Instance.onUpdateType += StackTypeUpdaterCommand.Execute;
+        CoreGameSignals.Instance.onPlay += OnPlay;
+        CoreGameSignals.Instance.onReset += OnReset;
+    }
 
+    private void OnInteractionWithCollectable(GameObject collectableGameObject)
+    {
+        DOTween.Complete(StackJumperCommand);
+        AdderOnStackCommand.Execute(collectableGameObject);
+        StartCoroutine(_stackAnimatorCommand.Execute());
+        StackTypeUpdaterCommand.Execute();
+    }
+
+    private void OnInteractionWithATM(GameObject collectableGameObject)
+    {
+
+    }
+
+    private void OnStackMove(Vector2 direction)
+    {
+
+    }
+
+    private void OnPlay()
+    {
+        _stackInitializerCommand.Execute();
+    }
+
+    private void OnReset()
+    {
+        LastCheck = false;
+        _collectableStack.Clear();
+        _collectableStack.TrimExcess();
     }
 
     private void OnDisable()
@@ -67,6 +106,13 @@ public class StackManager : MonoBehaviour
 
     private void UnSubscribeEvents()
     {
-
+        StackSignals.Instance.onInteractionCollectable -= OnInteractionWithCollectable;
+        StackSignals.Instance.onInteractionObstacle -= _itemRemoverOnStackCommand.Execute;
+        StackSignals.Instance.onInteractionATM -= OnInteractionWithATM;
+        StackSignals.Instance.onInteractionConveyor -= _stackInteractionWithConveyorCommand.Execute;
+        StackSignals.Instance.onStackFollowPlayer -= OnStackMove;
+        StackSignals.Instance.onUpdateType -= StackTypeUpdaterCommand.Execute;
+        CoreGameSignals.Instance.onPlay -= OnPlay;
+        CoreGameSignals.Instance.onReset -= OnReset;
     }
 }

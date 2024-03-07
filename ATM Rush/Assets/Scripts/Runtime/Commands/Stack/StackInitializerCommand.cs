@@ -13,4 +13,17 @@ public class StackInitializerCommand
         _stackManager = stackManager;
         _money = money;
     }
+
+    public void Execute()
+    {
+        var stackLevel = CoreGameSignals.Instance.onGetStackLevel();
+        for (int i = 1; i < stackLevel; i++)
+        {
+            GameObject obj = Object.Instantiate(_money);
+            _stackManager.AdderOnStackCommand.Execute(obj);
+        }
+
+        _stackManager.StackTypeUpdaterCommand.Execute();
+
+    }
 }

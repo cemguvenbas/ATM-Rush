@@ -15,4 +15,22 @@ public class ItemAdderOnStackCommand
         _collectableStack = collectableStack;
         _data = stackData;
     }
+
+    public void Execute(GameObject collectableGameObject)
+    {
+        if (_collectableStack.Count <= 0)
+        {
+            _collectableStack.Add(collectableGameObject);
+            collectableGameObject.transform.SetParent(_stackManager.transform);
+            collectableGameObject.transform.localPosition = new Vector3(0, 1f, 0.335f);
+        }
+        else
+        {
+            collectableGameObject.transform.SetParent(_stackManager.transform);
+            Vector3 newPos = _collectableStack[^1].transform.localPosition;
+            newPos.z += _data.CollectableOffsetInStack;
+            collectableGameObject.transform.localPosition = newPos;
+            _collectableStack.Add(collectableGameObject);
+        }
+    }
 }

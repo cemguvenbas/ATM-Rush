@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class StackAnimatorCommand 
 {
@@ -14,5 +15,20 @@ public class StackAnimatorCommand
         _stackManager = stackManager;
         _stackData = stackData;
         _collectableStack = collectableStack;
+    }
+
+    public IEnumerator Execute()
+    {
+        for (int i = 0; i <= _collectableStack.Count - 1; i++)
+        {
+            int index = (_collectableStack.Count - 1) - i;
+            _collectableStack[index].transform
+                .DOScale(
+                    new Vector3(_stackData.StackScaleValue, _stackData.StackScaleValue, _stackData.StackScaleValue),
+                    _stackData.StackAnimDuraction).SetEase(Ease.Flash);
+            _collectableStack[index].transform.DOScale(Vector3.one, _stackData.StackAnimDuraction)
+                .SetDelay(_stackData.StackAnimDuraction).SetEase(Ease.Flash);
+            yield return new WaitForSeconds(_stackData.StackAnimDuraction / 3);
+        }
     }
 }

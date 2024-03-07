@@ -11,4 +11,15 @@ public class StackTypeUpdaterCommand
     {
         _collectableStack = collectableStack;
     }
+
+    public void Execute()
+    {
+        _totalListScore = 0;
+        foreach (var items in _collectableStack)
+        {
+            //_totalListScore += items.GetComponent<CollectableManager>().GetCurrentValue() + 1;
+        }
+
+        ScoreSignals.Instance.onSetScore?.Invoke(_totalListScore);
+    }
 }
