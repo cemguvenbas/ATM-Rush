@@ -79,12 +79,25 @@ public class StackManager : MonoBehaviour
 
     private void OnInteractionWithATM(GameObject collectableGameObject)
     {
-
+        //ScoreSignals.Instance.onSetAtmScore?.Invoke((int)collectableGameObject.GetComponent<CollectableManager>()
+        //        .GetCurrentValue() + 1);
+        if (LastCheck == false)
+        {
+            _itemRemoverOnStackCommand.Execute(collectableGameObject);
+        }
+        else
+        {
+            collectableGameObject.SetActive(false);
+        }
     }
 
     private void OnStackMove(Vector2 direction)
     {
-
+        transform.position = new Vector3(0, gameObject.transform.position.y, direction.y + 2f);
+        if (gameObject.transform.childCount > 0)
+        {
+            _stackMoverCommand.Execute(direction.x, _collectableStack);
+        }
     }
 
     private void OnPlay()
