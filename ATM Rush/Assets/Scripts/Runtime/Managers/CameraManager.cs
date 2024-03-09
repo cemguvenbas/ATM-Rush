@@ -42,8 +42,8 @@ public class CameraManager : MonoBehaviour
 
     private void OnSetCinemachineTarget()
     {
-        //var playerManager = FindObjectOfType<PlayerManager>().transform;
-        //stateDrivenCamera.Follow = playerManager;
+        var playerManager = FindObjectOfType<PlayerManager>().transform;
+        stateDrivenCamera.Follow = playerManager;
     }
 
     private void OnReset()
